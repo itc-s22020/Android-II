@@ -18,11 +18,11 @@ class CityAdapter(val callback: (City) -> Unit) : RecyclerView.Adapter<CityAdapt
     override fun getItemCount(): Int = cityList.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-       holder.binding.name.apply {
-           text = cityList[position].name
-           setOnClickListener {
-               callback(cityList[position])
-           }
-       }
+        holder.binding.name.apply {
+            text = cityList[position].name
+            setOnClickListener {
+                callback(cityList[position])
+            }
+        }
     }
 }
