@@ -39,11 +39,12 @@ class MainActivity : AppCompatActivity() {
 
     @UiThread
     private fun receivWeatherInfo(q: String) {
-        val url = "$WEATHER_INFO_URL&q&appid=$API_ID"
+        val url = "$WEATHER_INFO_URL&q=$q&appid=$API_ID"
         val executorService = Executors.newSingleThreadExecutor()
         val backgroundReceiver = WeatherInfoBackgroundReceiver(url)
         val future = executorService.submit(backgroundReceiver)
         val result = future.get()
+        binding.tvWeatherDesc.text = result
     }
 
     private class WeatherInfoBackgroundReceiver(val urlString: String) : Callable<String> {
@@ -56,13 +57,15 @@ class MainActivity : AppCompatActivity() {
                 readTimeout = 1000
                 requestMethod = "GET"
             }
-            try {
+            return try {
                 con.connect()
                 val result = con.inputStream.reader().readText()
+                con.disconnect()
+                result
             }  catch (ex: SocketTimeoutException) {
                 Log.w(DEBUG_TAG, "通信タイムアウト", ex)
+                ""
             }
-            return "hoge"
         }
     }
 }
