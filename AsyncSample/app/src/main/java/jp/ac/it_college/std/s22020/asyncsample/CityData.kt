@@ -11,6 +11,7 @@ val cityList = listOf(
     City("東京", "Tokyo"),
     City("愛知", "Aichi"),
     City("和歌山", "Wakayama"),
+    City("奈良", "Nara"),
     City("沖縄", "Okinawa"),
     City("北海道", "Hokkaido"),
 )
