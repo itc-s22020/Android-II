@@ -5,8 +5,12 @@ import android.os.Bundle
 import android.util.Log
 import androidx.annotation.UiThread
 import androidx.annotation.WorkerThread
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import jp.ac.it_college.std.s22020.asynccoroutinesample.databinding.ActivityMainBinding
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 import java.net.HttpURLConnection
 import java.net.SocketTimeoutException
@@ -40,12 +44,19 @@ class MainActivity : AppCompatActivity() {
 
     @UiThread
     private fun receivWeatherInfo(q: String) {
+        lifecycleScope.launch {
+            val url = "$WEATHER_INFO_URL&q=$q&appid=$API_ID"
+            val result = WeatherInfoBackgroundReceiver(url)
+            showWeatherInfo(result)
+        }
+        /*
         val url = "$WEATHER_INFO_URL&q=$q&appid=$API_ID"
         val executorService = Executors.newSingleThreadExecutor()
         val backgroundReceiver = WeatherInfoBackgroundReceiver(url)
         val future = executorService.submit(backgroundReceiver)
         val result = future.get()
         showWeatherInfo(result)
+         */
     }
 
     private fun showWeatherInfo(result: String) {
@@ -64,9 +75,9 @@ class MainActivity : AppCompatActivity() {
         )
     }
 
-    private class WeatherInfoBackgroundReceiver(val urlString: String) : Callable<String> {
-        @WorkerThread
-        override fun call(): String {
+    @WorkerThread
+    private suspend fun WeatherInfoBackgroundReceiver(urlString: String) : String {
+        return withContext(Dispatchers.IO) {
             val url = URL(urlString)
             val con = url.openConnection() as HttpURLConnection
             con.apply {
@@ -74,12 +85,12 @@ class MainActivity : AppCompatActivity() {
                 readTimeout = 1000
                 requestMethod = "GET"
             }
-            return try {
+             try {
                 con.connect()
                 val result = con.inputStream.reader().readText()
                 con.disconnect()
                 result
-            }  catch (ex: SocketTimeoutException) {
+            } catch (ex: SocketTimeoutException) {
                 Log.w(DEBUG_TAG, "通信タイムアウト", ex)
                 ""
             }
