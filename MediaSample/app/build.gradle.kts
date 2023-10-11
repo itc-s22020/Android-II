@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "jp.ac.it_college.std.s22020.mediasample"
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         applicationId = "jp.ac.it_college.std.s22020.mediasample"
@@ -32,6 +32,9 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+    }
+    buildFeatures {
+        viewBinding
     }
 }
 
