@@ -3,6 +3,7 @@ package jp.ac.it_college.std.s22020.service_sample
 import android.Manifest
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -58,13 +59,37 @@ class SoundManageService : Service() {
 
     private fun onMediaPlayerPrepared() {
         mediaPlayer?.start()
+
+
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID).run {
+            setSmallIcon(android.R.drawable.ic_dialog_info)
+            setContentTitle(getString(R.string.msg_notification_title_finish))
+            setContentText(getString(R.string.msg_notification_text_finish))
+            val intent = Intent(this@SoundManageService, MainActivity::class.java).apply {
+                putExtra("fromNotification", true)
+            }
+            val stopServiceIntent = PendingIntent.getActivity(
+                this@SoundManageService,
+                0,
+                intent,
+                PendingIntent.FLAG_IMMUTABLE
+            )
+            setContentIntent(stopServiceIntent)
+            setAutoCancel((true))
+        }.build()
+        with(NotificationManagerCompat.from(this)) {
+            notify(100, notification)
+        }
+
+
+
     }
 
     private fun onPlaybackEnd() {
         val notification = NotificationCompat.Builder(this, CHANNEL_ID).run {
             setSmallIcon(android.R.drawable.ic_dialog_info)
-            setContentTitle(getString(R.string.msg_notification_title_finish))
-            setContentText(getString(R.string.msg_notification_text_finish))
+            setContentTitle(getString(R.string.msg_notification_title_start))
+            setContentText(getString(R.string.msg_notification_text_start))
         }.build()
         with(NotificationManagerCompat.from(this)) {
             if (ActivityCompat.checkSelfPermission(
