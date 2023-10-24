@@ -1,9 +1,11 @@
 package jp.ac.it_college.std.s22020.cameraintentsample
 
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import androidx.activity.result.contract.ActivityResultContracts
 import jp.ac.it_college.std.s22020.cameraintentsample.databinding.ActivityMainBinding
 
@@ -25,6 +27,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        binding.ivCamera.setOnClickListener{ onCameraImageClick() }
+    }
+
+    private fun onCameraImageClick() {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        cameraLauncher.launch(intent)
     }
 }
